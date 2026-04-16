@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:unitask/app/extensions/sized_box_extension.dart';
+import 'package:unitask/app/extensions/snackbar_extension.dart';
+import 'package:unitask/app/router/app_page.dart';
 import 'package:unitask/ui/common/label_text_field.dart';
 import 'package:unitask/ui/common/text_divider.dart';
+
+// ignore: unused_import
+import '../../app/extensions/snackbar_extension.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -43,13 +49,16 @@ class _LoginPageState extends State<LoginPage> {
                 label: '비밀번호',
                 hintText: '000000',
                 icon: LucideIcons.lockKeyhole,
+                enableObscure: true,
               ),
               20.heightBox,
               //패스워드 잊음
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    context.showSnackBar('곧 기능을 출시합니다!');
+                  },
                   child: const Text('비밀번호를 잊으셨나요?'),
                 ),
               ),
@@ -74,7 +83,14 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text('계정이 없으신가요?'),
-                  TextButton(onPressed: () {}, child: Text('회원가입')),
+                  TextButton(
+                    onPressed: () {
+                      context.pushNamed(
+                        AppPage.signup.name,
+                      ); //pushNamed: 스택쌓이면서 뒤로가기 버튼 생성
+                    },
+                    child: Text('회원가입'),
+                  ),
                 ],
               ),
             ],
