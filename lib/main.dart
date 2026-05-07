@@ -18,6 +18,9 @@ class UniTaskApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       routerConfig: appRouter,
+      debugShowCheckedModeBanner: true,
+      //debugShowMaterialGrid: true,
+      //showPerformanceOverlay: true,
     );
   }
 }
