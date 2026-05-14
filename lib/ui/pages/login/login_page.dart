@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:unitask/app/extensions/sized_box_extension.dart';
-import 'package:unitask/app/extensions/snackbar_extension.dart';
 import 'package:unitask/app/router/app_page.dart';
-import 'package:unitask/services/api_service.dart';
+import 'package:unitask/core/extensions/build_context_extension.dart';
+import 'package:unitask/core/extensions/sized_box_extension.dart';
+import 'package:unitask/core/models/result.dart';
+import 'package:unitask/features/auth/auth_provider.dart';
 import 'package:unitask/ui/common/label_text_field.dart';
 import 'package:unitask/ui/common/text_divider.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final TextEditingController _emailController = .new();
   final TextEditingController _passwordController = .new();
 
@@ -34,23 +36,28 @@ class _LoginPageState extends State<LoginPage> {
       return context.showSnackBar('이메일 또는 비밀번호를 입력해주세요.', isError: true);
     }
 
-    final response = await ApiService.login(email: email, password: password);
-    debugPrint('$response');
+    final result = await ref
+        .read(authProvider.notifier)
+        .login(email: email, password: password);
 
-    if (response == null) {
-      if (mounted) {
-        context.showSnackBar('로그인에 실패했습니다.', isError: true);
-      }
-    }
-
-    //TODO: 로그인 성공 -> 메인화면 이동
-    if (mounted) {
-      context.goNamed(AppPage.home.name);
+    switch (result) {
+      case Success():
+        if (mounted) {
+          context.goNamed(AppPage.home.name);
+        }
+        break;
+      case Failure(:final exception):
+        if (mounted) {
+          context.showSnackBar(exception.toString(), isError: true);
+        }
+        break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final loading = ref.watch(authProvider).isLoading;
+
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(8.0),
@@ -100,9 +107,18 @@ class _LoginPageState extends State<LoginPage> {
                 //로그인 버튼
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _onLogin,
-                    child: const Text(
+                  child: ElevatedButton.icon(
+                    onPressed: loading ? null : _onLogin,
+                    icon: loading
+                        ? const SizedBox.square(
+                            dimension: 14,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : null,
+                    label: const Text(
                       '로그인',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,

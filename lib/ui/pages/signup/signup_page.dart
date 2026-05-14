@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:unitask/app/extensions/snackbar_extension.dart';
-import 'package:unitask/services/api_service.dart';
+import 'package:unitask/core/extensions/build_context_extension.dart';
+import 'package:unitask/core/models/result.dart';
+import 'package:unitask/features/auth/auth_provider.dart';
 import 'package:unitask/ui/common/label_text_field.dart';
 
-class SignupPage extends StatefulWidget {
+class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  ConsumerState<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignupPageState extends ConsumerState<SignupPage> {
   final TextEditingController _nameController = TextEditingController();
 
   final TextEditingController _emailController = TextEditingController();
@@ -31,10 +33,6 @@ class _SignupPageState extends State<SignupPage> {
 
     super.dispose();
   }
-
-  bool loading = false;
-  void startLoading() => setState(() => loading = true);
-  void stopLoading() => setState(() => loading = false);
 
   Future<void> onSignup() async {
     debugPrint('계정 만들기');
@@ -55,31 +53,28 @@ class _SignupPageState extends State<SignupPage> {
       return;
     }
 
-    startLoading();
+    final result = await ref
+        .read(authProvider.notifier)
+        .signup(email: email, password: password, name: name);
 
-    final signupResult = await ApiService.signup(
-      email: email,
-      password: password,
-      name: name,
-    );
-
-    stopLoading();
-
-    if (signupResult == null) return;
-
-    if (!signupResult) {
-      if (mounted) {
-        context.showSnackBar('계정 생성에 실패했습니다.', isError: true);
-      }
-      return;
-    }
-    if (mounted) {
-      context.pop();
+    switch (result) {
+      case Success():
+        if (mounted) {
+          context.pop();
+        }
+      case Failure(:final exception):
+        if (mounted) {
+          context.showSnackBar(exception.toString(), isError: true);
+        }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    //TODO: AsyncValue() 데이터 추출
+
+    final loading = ref.watch(authProvider).isLoading;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,

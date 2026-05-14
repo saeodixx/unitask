@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:unitask/app/theme/app_theme.dart';
 
 import 'app/router/app__router.dart';
 
 void main() {
-  runApp(const UniTaskApp());
+  runApp(const ProviderScope(child: UniTaskApp()));
 }
 
 class UniTaskApp extends StatelessWidget {

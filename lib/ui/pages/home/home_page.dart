@@ -5,6 +5,7 @@ class HomePage extends StatelessWidget {
   const HomePage({super.key});
   @override
   Widget build(BuildContext context) {
+    //뒤로가기 방지 / 감지
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
