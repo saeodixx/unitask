@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
-enum Priority { low, med, high }
+enum Priority { high, medium, low }
 
 extension PriorityExtension on Priority {
   Color get primary => switch (this) {
-    Priority.low => Colors.green,
-    Priority.med => Colors.amber,
-    Priority.high => Colors.red,
+    .high => Colors.red,
+    .medium => Colors.amber,
+    .low => Colors.green,
   };
   Color get secondary => switch (this) {
-    Priority.low => Color(0xFFDCFCE7),
-    Priority.med => Color(0xFFFEF3C7),
-    Priority.high => Color(0xFFFEE2E2),
+    .high => Color(0xfffee2e2),
+    .medium => Color(0xfffef3c7),
+    .low => Color(0xffdcfce7),
   };
-
+  //다국어 지원시 il8n 연결하기
   String get title => switch (this) {
-    Priority.low => '낮음',
-    Priority.med => '보통',
-    Priority.high => '높음',
+    .high => '높음',
+    .medium => '중간',
+    .low => '낮음',
   };
 }

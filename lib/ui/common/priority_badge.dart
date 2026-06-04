@@ -8,7 +8,7 @@ Widget priorityBadgePreview() => Wrap(
   runSpacing: 10,
   children: [
     PriorityBadge(priority: Priority.low),
-    PriorityBadge(priority: Priority.med),
+    PriorityBadge(priority: Priority.medium),
     PriorityBadge(priority: Priority.high),
   ],
 );
